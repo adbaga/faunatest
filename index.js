@@ -18,10 +18,12 @@ app.use(cors());
 app.use(express.json());
 const accountDetails = require("./routes/account/account");
 const userData = require("./routes/account/users");
+const registerAccount = require("./routes/account/register")
 
 
 app.use("/account", accountDetails)
 app.use("/user", userData)
+app.use("/register", registerAccount)
 
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);

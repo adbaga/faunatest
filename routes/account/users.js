@@ -8,17 +8,42 @@ if (serverClient){
   console.log("Faunadb connected")
 }
 
+router.get('/test', function (req, res) {
+  res.send('GET request to the homepage')
+})
 
-router.use('/:id', function (req, res){ // or app.get
-  var id = req.params.id;
-  console.log('Test param: ' + id); // "Test param: foo"
-  serverClient.query(
-            q.Get(q.Ref(q.Collection('Accounts'), id))
-          )
-          .then((ret) => res.send(ret))
+
+router.get('/:id', function (req, res){ // or app.get
+  const id = req.params.id;
+  console.log('Test param: ' + id);
+
+  try {
+
+    idExist = serverClient.query(
+      q.Exists(q.Ref(q.Collection('Accounts'), id))
+    )
+
+    if(!idExist) {
+
+      return res.status(400).send(`ID ${id} doesn't exists`)
+    }
+
+
+    serverClient.query(
+      q.Get(q.Ref(q.Collection('Accounts'), id))
+    )
+    .then((ret) => res.send(ret))
+
+
+    
+  } catch (error) {
+
+    res.send("There is an error")
+    
+  }
+
+  
 });
-
-
 
 
 module.exports = router;

@@ -9,7 +9,6 @@ if (serverClient){
   console.log(serverClient)
 }
 
-
 // GET method route
 router.get('/', function (req, res) {
   res.send('GET request to the homepage')
@@ -19,6 +18,71 @@ router.get('/', function (req, res) {
 router.post('/', function (req, res) {
   res.send('POST request to the homepage')
 })
+
+//get information about user
+router.get('/user/:id', function (req, res){ // or app.get
+  const id = req.params.id;
+  console.log('Test param: ' + id);
+
+  try {
+
+    idExist = serverClient.query(
+      q.Exists(q.Ref(q.Collection('Accounts'), id))
+    )
+
+    if(!idExist) {
+
+      return res.status(400).send(`ID ${id} doesn't exists`)
+    }
+
+
+    serverClient.query(
+      q.Get(q.Ref(q.Collection('Accounts'), id))
+    )
+    .then((ret) => res.send(ret))
+
+
+    
+  } catch (error) {
+
+    res.send("There is an error")
+    
+  }
+
+  
+});
+
+router.delete('/user/:id', function (req, res){ // or app.get
+  const id = req.params.id;
+  console.log('Test param: ' + id); // "Test param: foo"
+
+  
+  serverClient.query(
+    q.Delete(
+      q.Ref(q.Collection('Accounts'), id)
+    )
+  )
+  .then((ret) => console.log(ret))
+  
+});
+
+
+
+router.put('user/:id', function (req, res){
+
+  const id = req.params.id
+  serverClient.query(
+  q.Update(
+    q.Ref(q.Collection('Accounts'), id),
+    { data: { username: req.params.username } },
+  )
+)
+.then((ret) => console.log(ret))
+
+
+});
+
+
 
 
 
@@ -77,46 +141,53 @@ router.post('/', function (req, res) {
 //   });
 //   module.exports = router;
 
-router.get('/user/:id', function (req, res){ // or app.get
-  var id = req.params.id;
-  console.log('Test param: ' + id); // "Test param: foo"
-  serverClient.query(
-            q.Get(q.Ref(q.Collection('Accounts'), id))
-          )
-          .then((ret) => res.send(ret))
-});
 
 
-router.post('/register', function (req, res){
 
-  serverClient.query(q.Create(
 
-    q.Collection('Accounts'),
-    {
-      data: {
 
-        username: req.body.username,
-        email: req.body.email,
-        role: req.body.role,
-        is_active: true,
-        notes: req.body.note,
-        date_joined: Date.now()
+
+
+
+
+
+
+
+
+
+
+
+
+// router.post('/register', function (req, res){
+
+//   serverClient.query(q.Create(
+
+//     q.Collection('Accounts'),
+//     {
+//       data: {
+
+//         username: req.body.username,
+//         email: req.body.email,
+//         role: req.body.role,
+//         is_active: true,
+//         note: req.body.note,
+//         date_joined: Date.now()
 
         
         
 
 
         
-      }
+//       }
 
-    })
+//     })
 
 
-  )
+//   )
     
     
 
-})
+// })
 
 
 
